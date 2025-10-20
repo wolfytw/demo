@@ -8,21 +8,104 @@ PAGE_TEMPLATE = """
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>BMI Calculator</title>
+    <title>BMI Buddy</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 2rem; background: #f5f5f5; }
-        main { background: #ffffff; padding: 2rem; border-radius: 8px; max-width: 420px; }
-        form { display: flex; flex-direction: column; gap: 1rem; }
-        label { font-weight: bold; }
-        input[type="number"] { padding: 0.5rem; }
-        button { padding: 0.75rem; background: #1976d2; color: #ffffff; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #125a9c; }
-        .result { margin-top: 1rem; font-size: 1.1rem; }
+        :root {
+            color-scheme: light;
+            --accent: #ff9ecd;
+            --accent-dark: #ff7bbd;
+            --card: #ffffff;
+            --background: linear-gradient(135deg, #ffe8f3 0%, #e3f6ff 100%);
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--background);
+            padding: 2rem;
+        }
+        .card {
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: 0 18px 40px rgba(255, 155, 205, 0.25);
+            padding: 2.5rem;
+            width: min(460px, 100%);
+            text-align: center;
+        }
+        .card h1 {
+            margin: 0 0 1.5rem;
+            font-size: 2rem;
+            color: #ff6dae;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            text-align: left;
+        }
+        label {
+            font-weight: 600;
+            color: #5c5c5c;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ffd0e6;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #fff9fd;
+        }
+        input[type="number"]:focus {
+            outline: 2px solid var(--accent);
+            border-color: transparent;
+            box-shadow: 0 0 0 3px rgba(255, 158, 205, 0.25);
+        }
+        button {
+            padding: 0.85rem 1rem;
+            border: none;
+            border-radius: 999px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            background: var(--accent);
+            color: #ffffff;
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.2s ease;
+        }
+        button:hover {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+        }
+        .result {
+            margin-top: 2rem;
+            padding: 1.25rem;
+            border-radius: 16px;
+            background: #fff3fb;
+            border: 1px solid #ffd4ea;
+        }
+        .result strong { color: #ff6dae; }
+        .advice {
+            margin-top: 0.75rem;
+            color: #5c5c5c;
+            line-height: 1.5;
+        }
+        .pill {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.35rem 1rem;
+            border-radius: 999px;
+            background: rgba(255, 158, 205, 0.22);
+            color: #ff489f;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
-    <main>
-        <h1>BMI Calculator</h1>
+    <div class="card">
+        <h1>✨ BMI Buddy ✨</h1>
         <form method="post">
             <div>
                 <label for="weight">Weight (kg)</label>
@@ -32,18 +115,27 @@ PAGE_TEMPLATE = """
                 <label for="height">Height (cm)</label>
                 <input id="height" name="height" type="number" step="0.1" min="0" required value="{{ height }}" />
             </div>
-            <button type="submit">Calculate</button>
+            <button type="submit">Show me my sparkle!</button>
         </form>
         {% if bmi %}
         <div class="result">
+            <p class="pill">{{ category }}</p>
             <p><strong>Your BMI:</strong> {{ bmi }}</p>
-            <p><strong>Category:</strong> {{ category }}</p>
+            <p class="advice">{{ advice }}</p>
         </div>
         {% endif %}
-    </main>
+    </div>
 </body>
 </html>
 """
+
+
+HEALTH_TIPS = {
+    "Underweight": "Fuel up with nutrient-dense meals, add a few extra healthy snacks, and chat with a dietitian if you can.",
+    "Normal weight": "Keep shining! Balance your plate with colorful veggies, protein, and stay active most days.",
+    "Overweight": "Tiny tweaks count. Try gentle cardio, mindful portions, and keep water nearby for a sip break.",
+    "Obesity": "You deserve to feel great. Blend movement you enjoy with supportive medical guidance for steady wins.",
+}
 
 
 def classify_bmi(bmi: float) -> str:
@@ -62,6 +154,7 @@ def index():
     category = ""
     weight_value = ""
     height_value = ""
+    advice = ""
 
     if request.method == "POST":
         weight_raw = request.form.get("weight", "").strip()
@@ -77,6 +170,7 @@ def index():
                 bmi_value = weight / (height_m ** 2)
                 bmi = f"{bmi_value:.2f}"
                 category = classify_bmi(bmi_value)
+                advice = HEALTH_TIPS.get(category, "")
         except ValueError:
             pass
 
@@ -86,6 +180,7 @@ def index():
         category=category,
         weight=weight_value,
         height=height_value,
+        advice=advice,
     )
 
 
