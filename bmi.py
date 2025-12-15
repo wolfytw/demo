@@ -1,6 +1,6 @@
 from flask import Flask, render_template_string, request
 
-# Minimal Flask app that renders a BMI calculator form and its result
+# 精簡的 Flask 應用程式，呈現 BMI 計算表單與結果
 app = Flask(__name__)
 
 PAGE_TEMPLATE = """
@@ -8,7 +8,7 @@ PAGE_TEMPLATE = """
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>BMI Buddy</title>
+    <title>BMI 小幫手</title>
     <style>
         :root {
             color-scheme: light;
@@ -105,22 +105,22 @@ PAGE_TEMPLATE = """
 </head>
 <body>
     <div class="card">
-        <h1>✨ BMI Buddy ✨</h1>
+        <h1>✨ BMI 小幫手 ✨</h1>
         <form method="post">
             <div>
-                <label for="weight">Weight (kg)</label>
+                <label for="weight">體重 (kg)</label>
                 <input id="weight" name="weight" type="number" step="0.1" min="0" required value="{{ weight }}" />
             </div>
             <div>
-                <label for="height">Height (cm)</label>
+                <label for="height">身高 (cm)</label>
                 <input id="height" name="height" type="number" step="0.1" min="0" required value="{{ height }}" />
             </div>
-            <button type="submit">Show me my sparkle!</button>
+            <button type="submit">告訴我我的閃耀數字！</button>
         </form>
         {% if bmi %}
         <div class="result">
             <p class="pill">{{ category }}</p>
-            <p><strong>Your BMI:</strong> {{ bmi }}</p>
+            <p><strong>你的 BMI：</strong> {{ bmi }}</p>
             <p class="advice">{{ advice }}</p>
         </div>
         {% endif %}
@@ -131,21 +131,21 @@ PAGE_TEMPLATE = """
 
 
 HEALTH_TIPS = {
-    "Underweight": "Fuel up with nutrient-dense meals, add a few extra healthy snacks, and chat with a dietitian if you can.",
-    "Normal weight": "Keep shining! Balance your plate with colorful veggies, protein, and stay active most days.",
-    "Overweight": "Tiny tweaks count. Try gentle cardio, mindful portions, and keep water nearby for a sip break.",
-    "Obesity": "You deserve to feel great. Blend movement you enjoy with supportive medical guidance for steady wins.",
+    "體重過輕": "補充高營養密度的餐點，再加幾份健康小點，必要時也可諮詢營養師。",
+    "正常範圍": "維持亮眼狀態！餐盤多放繽紛蔬菜與蛋白質，並保持規律活動。",
+    "過重": "小小改變都算數，嘗試輕鬆的有氧運動、注意份量，隨手放瓶水補充水分。",
+    "肥胖": "你值得好好感受身心舒適，結合喜歡的運動與專業醫療建議，穩健前進。",
 }
 
 
 def classify_bmi(bmi: float) -> str:
     if bmi < 18.5:
-        return "Underweight"
+        return "體重過輕"
     if bmi < 25:
-        return "Normal weight"
+        return "正常範圍"
     if bmi < 30:
-        return "Overweight"
-    return "Obesity"
+        return "過重"
+    return "肥胖"
 
 
 @app.route("/", methods=["GET", "POST"])
